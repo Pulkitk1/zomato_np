@@ -255,24 +255,46 @@ def index() -> str:
             fetch("/meta/locations"),
             fetch("/meta/cuisines"),
           ]);
+          
+          if (!locResp.ok || !cuisineResp.ok) throw new Error("Metadata fetch failed");
+
           const locations = await locResp.json();
           const cuisines = await cuisineResp.json();
 
-          locations.forEach((loc) => {
+          if (locations.length === 0) {
             const opt = document.createElement("option");
-            opt.value = loc;
-            opt.textContent = loc;
+            opt.textContent = "No locations found (timeout?)";
+            opt.disabled = true;
             placeSelect.appendChild(opt);
-          });
+          } else {
+            locations.forEach((loc) => {
+              const opt = document.createElement("option");
+              opt.value = loc;
+              opt.textContent = loc;
+              placeSelect.appendChild(opt);
+            });
+          }
 
-          cuisines.forEach((c) => {
+          if (cuisines.length === 0) {
             const opt = document.createElement("option");
-            opt.value = c;
-            opt.textContent = c;
+            opt.textContent = "No cuisines found (timeout?)";
+            opt.disabled = true;
             cuisineSelect.appendChild(opt);
-          });
+          } else {
+            cuisines.forEach((c) => {
+              const opt = document.createElement("option");
+              opt.value = c;
+              opt.textContent = c;
+              cuisineSelect.appendChild(opt);
+            });
+          }
         } catch (err) {
-          console.error("Failed to load location/cuisine options", err);
+          console.error("Failed to load options", err);
+          const errOpt = document.createElement("option");
+          errOpt.textContent = "Error loading options";
+          errOpt.disabled = true;
+          placeSelect.appendChild(errOpt.cloneNode(true));
+          cuisineSelect.appendChild(errOpt);
         }
       }
 

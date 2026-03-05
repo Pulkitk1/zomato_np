@@ -9,8 +9,14 @@ Responsibilities in this phase:
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Optional
+
+# Vercel Fix: Ensure Hugging Face uses the writable /tmp directory
+if os.environ.get("VERCEL"):
+    os.environ["HF_DATASETS_CACHE"] = "/tmp/huggingface_datasets"
+    os.environ["HUGGINGFACE_HUB_CACHE"] = "/tmp/huggingface_hub"
 
 from datasets import Dataset, load_dataset
 import pandas as pd

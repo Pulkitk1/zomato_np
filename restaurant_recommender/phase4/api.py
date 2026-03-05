@@ -51,20 +51,24 @@ def get_locations() -> list[str]:
     """
     Return all unique locations from the dataset.
     """
-
-    df = load_core_dataframe(sample_size=1000)
-    if "location" not in df.columns:
+    try:
+        # Vercel Fix: Use very small sample for dropdowns to prevent timeouts
+        df = load_core_dataframe(sample_size=200)
+        if "location" not in df.columns:
+            return []
+        values = (
+            df["location"]
+            .dropna()
+            .astype(str)
+            .str.strip()
+            .replace("", None)
+            .dropna()
+            .unique()
+        )
+        return sorted(set(values))
+    except Exception as e:
+        print(f"Error loading locations: {e}")
         return []
-    values = (
-        df["location"]
-        .dropna()
-        .astype(str)
-        .str.strip()
-        .replace("", None)
-        .dropna()
-        .unique()
-    )
-    return sorted(set(values))
 
 
 @app.get("/meta/cuisines")
@@ -72,23 +76,27 @@ def get_cuisines() -> list[str]:
     """
     Return all unique cuisine strings from the dataset, split on commas.
     """
-
-    df = load_core_dataframe(sample_size=1000)
-    if "cuisines" not in df.columns:
+    try:
+        # Vercel Fix: Use very small sample for dropdowns to prevent timeouts
+        df = load_core_dataframe(sample_size=200)
+        if "cuisines" not in df.columns:
+            return []
+        raw = (
+            df["cuisines"]
+            .dropna()
+            .astype(str)
+            .str.split(",")
+        )
+        cuisines: set[str] = set()
+        for parts in raw:
+            for part in parts:
+                cleaned = part.strip()
+                if cleaned:
+                    cuisines.add(cleaned)
+        return sorted(list(cuisines))
+    except Exception as e:
+        print(f"Error loading cuisines: {e}")
         return []
-    raw = (
-        df["cuisines"]
-        .dropna()
-        .astype(str)
-        .str.split(",")
-    )
-    cuisines: set[str] = set()
-    for parts in raw:
-        for part in parts:
-            cleaned = part.strip()
-            if cleaned:
-                cuisines.add(cleaned)
-    return sorted(cuisines)
 
 
 @app.post("/recommend", response_model=RecommendationResponse)
