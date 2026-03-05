@@ -50,13 +50,17 @@ Once running, navigate to:
 - UI: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 - API Docs: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
-### Running Tests
+## Deployment to Vercel
 
-To verify the core logic:
+This project is configured for easy deployment to Vercel.
 
-```bash
-pytest
-```
+1.  **Connect to GitHub**: Ensure your project is pushed to a GitHub repository.
+2.  **Import to Vercel**: Create a new project on Vercel and import your repository.
+3.  **Configure Environment Variables**:
+    - Add `GROQ_API_KEY` in the Vercel Project Settings -> Environment Variables.
+4.  **Deploy**: Vercel will automatically detect the configuration and deploy your FastAPI app.
+
+The project uses streaming for data loading to remain within Vercel's serverless execution limits.
 
 ## Architecture
 

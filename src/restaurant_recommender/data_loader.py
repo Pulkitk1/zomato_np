@@ -18,36 +18,36 @@ import pandas as pd
 from .config import CORE_COLUMNS, DATASET_NAME, get_default_cache_dir
 
 
-def load_raw_dataset(split: str = "train") -> Dataset:
+def load_raw_dataset(split: str = "train", streaming: bool = False) -> Dataset:
     """
-    Load the raw Hugging Face dataset split.
-
-    This uses the standard Hugging Face `datasets` caching mechanism under the hood,
-    so repeated calls will not re-download the data.
+    Load the raw Hugging Face dataset split with optional streaming.
     """
 
-    return load_dataset(DATASET_NAME, split=split)
+    return load_dataset(DATASET_NAME, split=split, streaming=streaming)
 
 
 def load_core_dataframe(split: str = "train", *, sample_size: Optional[int] = None) -> pd.DataFrame:
     """
     Load the dataset as a pandas DataFrame containing only the core columns.
 
-    Args:
-        split: Dataset split to load (default: "train").
-        sample_size: If provided, limit the DataFrame to the first N rows
-            for quicker local experimentation and tests.
+    Uses streaming if sample_size is specified to avoid full downloads on serverless.
     """
 
-    ds = load_raw_dataset(split=split)
+    # Vercel fix: Use streaming for small samples to avoid 500MB+ download
+    streaming = sample_size is not None and sample_size <= 10000
+    ds = load_raw_dataset(split=split, streaming=streaming)
 
     if sample_size is not None:
-        sample_size = min(sample_size, len(ds))
-        ds = ds.select(range(sample_size))
+        if streaming:
+            # For streaming datasets, we take only N rows
+            ds = ds.take(sample_size)
+        else:
+            sample_size = min(sample_size, len(ds))
+            ds = ds.select(range(sample_size))
 
-    df = ds.to_pandas()
-    # Only keep the core columns that actually exist in the dataset,
-    # which makes the function more robust if the upstream schema evolves.
+    df = pd.DataFrame(list(ds)) if streaming else ds.to_pandas()
+    
+    # Only keep the core columns that actually exist.
     available_core_cols = [c for c in CORE_COLUMNS if c in df.columns]
     return df[available_core_cols]
 
