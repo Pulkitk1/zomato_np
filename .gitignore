@@ -1,0 +1,22 @@
+# Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Secrets
+.env
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Databases
+*.db
+*.sqlite
+
+# OS files
+.DS_Store
+Thumbs.db
