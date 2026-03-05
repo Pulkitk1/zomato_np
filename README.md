@@ -40,10 +40,10 @@ Run the following command from the project root:
 
 ```bash
 # On Windows (PowerShell)
-$env:PYTHONPATH="src"; python -m uvicorn restaurant_recommender.phase4.api:app --reload
+python -m uvicorn restaurant_recommender.phase4.api:app --reload
 
 # On Linux/macOS
-PYTHONPATH=src python -m uvicorn restaurant_recommender.phase4.api:app --reload
+python -m uvicorn restaurant_recommender.phase4.api:app --reload
 ```
 
 Once running, navigate to:

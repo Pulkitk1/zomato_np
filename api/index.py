@@ -1,8 +1,9 @@
 import sys
 import os
 
-# Add the src directory to the system path to allow imports of our local modules
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
+# Add the project root to the system path to allow imports of our local modules
+# This is necessary when the serverless function is triggered from a subdirectory
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from restaurant_recommender.phase4.api import app
 
