@@ -52,7 +52,7 @@ def get_locations() -> list[str]:
     Return all unique locations from the dataset.
     """
 
-    df = load_core_dataframe(sample_size=5000)
+    df = load_core_dataframe(sample_size=1000)
     if "location" not in df.columns:
         return []
     values = (
@@ -73,7 +73,7 @@ def get_cuisines() -> list[str]:
     Return all unique cuisine strings from the dataset, split on commas.
     """
 
-    df = load_core_dataframe(sample_size=5000)
+    df = load_core_dataframe(sample_size=1000)
     if "cuisines" not in df.columns:
         return []
     raw = (
